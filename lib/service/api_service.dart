@@ -12,6 +12,8 @@ class ApiService {
   ApiService() {
     // Set default options for Dio
     dio.options.baseUrl = 'http://192.168.4.72/api/';
+  
+
     dio.options.headers = {'Content-Type': 'application/json'};
     dio.options.connectTimeout = const Duration(seconds: 10);
     dio.options.receiveTimeout = const Duration(seconds: 10);
@@ -66,6 +68,8 @@ class ApiService {
     }
   }
 
+/*************  ✨ Codeium Command ⭐  *************/
+/******  e571f5ae-8b38-4fb1-aa43-9c5d640e8707  *******/
   Future<void> postData(FormData user, String? accessToken) async {
     try {
       dio.options.headers['Authorization'] = 'Bearer $accessToken';

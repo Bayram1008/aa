@@ -19,42 +19,18 @@ class _NewEmployeeState extends State<NewEmployee> {
   final serviceInNewEmployee = ApiService();
   final savedData = TokenService();
 
-  FocusNode newFirstNameFocus = FocusNode();
-
-  FocusNode newLastNameFocus = FocusNode();
-
-  FocusNode newPositionFocus = FocusNode();
-
-  FocusNode newEmailFocus = FocusNode();
-
-  FocusNode newPhoneFocus = FocusNode();
-
-  FocusNode newBirthdayFocus = FocusNode();
-
-  FocusNode newHiredDFayFocus = FocusNode();
-
-  FocusNode newResignedDayFocus = FocusNode();
-
   final newFirstNameController = TextEditingController();
-
   final newLastNameController = TextEditingController();
-
   final newPositionController = TextEditingController();
-
   final newEmailController = TextEditingController();
-
   final newPhoneController = TextEditingController();
-
   final newBirthdayController = TextEditingController();
-
   final newHiredDayController = TextEditingController();
-
   final newResignedDayController = TextEditingController();
 
-  Future<void> selectDate(
-    BuildContext context,
-    TextEditingController controller,
-  ) async {
+  File? avatarFile;
+
+  Future<void> selectDate(BuildContext context, TextEditingController controller) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -66,40 +42,31 @@ class _NewEmployeeState extends State<NewEmployee> {
     }
   }
 
-  void changeField(
-    BuildContext context,
-    FocusNode currentField,
-    FocusNode nextField,
-  ) {
-    currentField.unfocus();
-    FocusScope.of(context).requestFocus(nextField);
+  Future<void> pickedAvatar() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: false,
+    );
+    if (result != null && result.files.single.path != null) {
+      setState(() {
+        avatarFile = File(result.files.single.path!);
+      });
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
-    newFirstNameFocus.dispose();
-    newLastNameFocus.dispose();
-    newPositionFocus.dispose();
-    newEmailFocus.dispose();
-    newPhoneFocus.dispose();
-    newBirthdayFocus.dispose();
-    newHiredDFayFocus.dispose();
-    newResignedDayFocus.dispose();
+    newFirstNameController.dispose();
+    newLastNameController.dispose();
+    newPositionController.dispose();
+    newEmailController.dispose();
+    newPhoneController.dispose();
+    newBirthdayController.dispose();
+    newHiredDayController.dispose();
+    newResignedDayController.dispose();
   }
 
-  Future<File?> pickedAvatar() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: false,
-    );
-    if (result != null) {
-      final File file = File(result.files.single.path!);
-      return file;
-    }return null;
-  }
-
-  File? avatarFile;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,25 +81,19 @@ class _NewEmployeeState extends State<NewEmployee> {
         child: ListView(
           padding: const EdgeInsets.all(16.0),
           children: [
+            avatarFile != null
+                ? Image.file(avatarFile!, height: 100, width: 100, fit: BoxFit.cover)
+                : const SizedBox.shrink(), 
+
             ElevatedButton(
-              onPressed: () async {
-                File? pickedFile = await pickedAvatar();
-                  setState(() {
-                    avatarFile = pickedFile;
-                  });
-              },
-              child: Text(
+              onPressed: pickedAvatar,
+              child: const Text(
                 'Choose the image for avatar',
                 style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 16),
             TextFormField(
-              autofocus: true,
-              focusNode: newFirstNameFocus,
-              onFieldSubmitted: (_) {
-                changeField(context, newFirstNameFocus, newLastNameFocus);
-              },
               controller: newFirstNameController,
               decoration: const InputDecoration(
                 labelText: 'First name',
@@ -141,10 +102,6 @@ class _NewEmployeeState extends State<NewEmployee> {
             ),
             const SizedBox(height: 16),
             TextFormField(
-              focusNode: newLastNameFocus,
-              onFieldSubmitted: (_) {
-                changeField(context, newLastNameFocus, newPositionFocus);
-              },
               controller: newLastNameController,
               decoration: const InputDecoration(
                 labelText: 'Last name',
@@ -153,10 +110,6 @@ class _NewEmployeeState extends State<NewEmployee> {
             ),
             const SizedBox(height: 16),
             TextFormField(
-              focusNode: newPositionFocus,
-              onFieldSubmitted: (_) {
-                changeField(context, newPositionFocus, newEmailFocus);
-              },
               controller: newPositionController,
               decoration: const InputDecoration(
                 labelText: 'Position',
@@ -165,10 +118,6 @@ class _NewEmployeeState extends State<NewEmployee> {
             ),
             const SizedBox(height: 16),
             TextFormField(
-              focusNode: newEmailFocus,
-              onFieldSubmitted: (_) {
-                changeField(context, newEmailFocus, newPhoneFocus);
-              },
               controller: newEmailController,
               decoration: const InputDecoration(
                 labelText: 'Email Address',
@@ -178,10 +127,6 @@ class _NewEmployeeState extends State<NewEmployee> {
             ),
             const SizedBox(height: 16),
             TextFormField(
-              focusNode: newPhoneFocus,
-              onFieldSubmitted: (_) {
-                changeField(context, newPhoneFocus, newBirthdayFocus);
-              },
               controller: newPhoneController,
               decoration: const InputDecoration(
                 labelText: 'Phone Number',
@@ -191,10 +136,6 @@ class _NewEmployeeState extends State<NewEmployee> {
             ),
             const SizedBox(height: 16),
             TextFormField(
-              focusNode: newBirthdayFocus,
-              onFieldSubmitted: (_) {
-                changeField(context, newBirthdayFocus, newHiredDFayFocus);
-              },
               controller: newBirthdayController,
               readOnly: true,
               onTap: () => selectDate(context, newBirthdayController),
@@ -208,14 +149,6 @@ class _NewEmployeeState extends State<NewEmployee> {
               children: [
                 Expanded(
                   child: TextFormField(
-                    focusNode: newHiredDFayFocus,
-                    onFieldSubmitted: (_) {
-                      changeField(
-                        context,
-                        newHiredDFayFocus,
-                        newResignedDayFocus,
-                      );
-                    },
                     controller: newHiredDayController,
                     readOnly: true,
                     onTap: () => selectDate(context, newHiredDayController),
@@ -228,7 +161,6 @@ class _NewEmployeeState extends State<NewEmployee> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: TextFormField(
-                    focusNode: newResignedDayFocus,
                     controller: newResignedDayController,
                     readOnly: true,
                     onTap: () => selectDate(context, newResignedDayController),
@@ -258,7 +190,7 @@ class _NewEmployeeState extends State<NewEmployee> {
                 TextButton(
                   onPressed: () async {
                     Employee newUser = Employee(
-                      avatar: avatarFile!.path != null ? MultipartFile.fromFile(avatarFile!.path).toString() : null,
+                      avatar: avatarFile != null ? await MultipartFile.fromFile(avatarFile!.path).toString() : null,
                       firstName: newFirstNameController.text,
                       lastName: newLastNameController.text,
                       birthDate: DateTime.now(),
@@ -278,16 +210,13 @@ class _NewEmployeeState extends State<NewEmployee> {
                         await savedData.getAccessToken(),
                       );
 
-                      final newEmployeeList = await serviceInNewEmployee
-                          .getData(await savedData.getAccessToken());
+                      final newEmployeeList = await serviceInNewEmployee.getData(await savedData.getAccessToken());
 
                       if (!mounted) return;
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder:
-                              (context) =>
-                                  UserList(employeeList: newEmployeeList),
+                          builder: (context) => UserList(employeeList: newEmployeeList),
                         ),
                       );
                     } catch (e) {
